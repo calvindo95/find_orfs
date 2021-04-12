@@ -1,6 +1,6 @@
 # find_orfs
 
-This is a simple program that will fild all ORFs in a fasta file with 1 or more sequences
+This is a simple program that will find all ORFs in a fasta file with 1 or more sequences
 ## Requirements
 * python 3.x
 ## Install
@@ -21,5 +21,9 @@ Run the script: (this section does not include the cli yet)
 ```
 ./main.py
 ```
+For some reason the last 2 steps don't work for me, so this is the current work-aorund to run the program:
+'''
+python3 main.py
+'''
 ## Author
 * Calvin Do
