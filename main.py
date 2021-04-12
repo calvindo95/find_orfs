@@ -4,7 +4,7 @@ from Bio import SeqIO
 
 # TODO:
 # make cli interface
-# write orfs to a fasta file
+# write orfs to a fasta file -- this is kinda done, it needs more work
 
 '''
     Input: None
@@ -46,12 +46,23 @@ def find_orfs(record):
                     #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
     return pros, strands, frames
 
+'''
+    Input: record_desc, pro, strand, frame
+    Output: None
+'''
+def write_to_fasta_file(record_desc, pro, strand, frame):
+    with open('test.fasta', 'a') as result:
+        result.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(pro)} \n')
+        result.write(f"{pro}\n")
+
 if __name__ == '__main__':
     fasta_files = get_list_of_files()
     
     for file in fasta_files:
         records = read_fasta_file(file)
         for record in records:
+            record_description = record.description
             pros, strands, frames = find_orfs(record)
             for pro, strand, frame in zip(pros, strands, frames):
-                print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
+                write_to_fasta_file(record_description, pro, strand, frame)
+                #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
