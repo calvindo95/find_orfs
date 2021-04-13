@@ -31,31 +31,30 @@ def read_fasta_file(file):
 
 '''
     Input: a single record
-    Output: returns list of proteins, strands, frames of each record
+    Output: returns list of nucleotides, strands, frames of each record
 '''
 def find_orfs(record):
-    table = 11
-    min_protein_len = 100
-    proteins, strands, frames = [], [], []
+    min_nucleotide_len = 100
+    nucleotides, strands, frames = [], [], []
     for strand, nucleotide in [(+1, record.seq), (-1, record.seq.reverse_complement())]:
         for frame in range(3):
             length = 3 * ((len(record)-frame) // 3 )     # multiples of 3 
-            for protein in nucleotide[frame:frame+length].translate(table).split('*'):
-                if len(protein) >= min_protein_len:
-                    proteins.append(protein)
+            for nucleotide in nucleotide[frame:frame+length].split('*'):
+                if len(nucleotide) >= min_nucleotide_len:
+                    nucleotides.append(nucleotide)
                     strands.append(strand)
                     frames.append(frame)
                     #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
-    return proteins, strands, frames
+    return nucleotides, strands, frames
 
 '''
-    Input: record_desc, protein, strand, frame
+    Input: record_desc, nucleotide, strand, frame
     Output: None
 '''
-def write_to_fasta_file(record_desc, protein, strand, frame):
-    with open('test.fasta', 'a') as f:
-        f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(protein)} \n')
-        f.write(f"{protein}\n")
+def write_to_fasta_file(record_desc, nucleotide, strand, frame):
+    with open('orfs_'+file, 'a') as f:
+        f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(nucleotide)} \n')
+        f.write(f"{nucleotide}\n")
 
 parser = argparse.ArgumentParser(description="Finds all possible ORFs in a DNA sequence from a fasta file.")
 parser.add_argument("filename", help="Path to fasta file", metavar="<FASTA file>", type=str)
@@ -67,7 +66,7 @@ if __name__ == '__main__':
     records = read_fasta_file(file)
     for record in records:
         record_description = record.description
-        proteins, strands, frames = find_orfs(record)
-        for protein, strand, frame in zip(proteins, strands, frames):
-            write_to_fasta_file(record_description, protein, strand, frame)
+        nucleotides, strands, frames = find_orfs(record)
+        for nucleotide, strand, frame in zip(nucleotides, strands, frames):
+            write_to_fasta_file(record_description, nucleotide, strand, frame)
             #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
