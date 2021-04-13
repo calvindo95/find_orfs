@@ -35,38 +35,51 @@ def read_fasta_file(file):
 '''
 def find_orfs(record):
     min_nucleotide_len = 100
-    nucleotides, strands, frames = [], [], []
+    all_orfs = []
     for strand, nucleotide in [(+1, record.seq), (-1, record.seq.reverse_complement())]:
         for frame in range(3):
             length = 3 * ((len(record)-frame) // 3 )     # multiples of 3 
             for nucleotide in nucleotide[frame:frame+length].split('*'):
+                local_orfs = []
                 if len(nucleotide) >= min_nucleotide_len:
-                    nucleotides.append(nucleotide)
-                    strands.append(strand)
-                    frames.append(frame)
-                    #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
-    return nucleotides, strands, frames
+                    local_orfs.append(record.description)
+                    local_orfs.append(nucleotide)
+                    local_orfs.append(strand)
+                    local_orfs.append(frame)
+                    all_orfs.append(local_orfs)
+    return all_orfs
 
 '''
     Input: record_desc, nucleotide, strand, frame
     Output: None
 '''
 def write_to_fasta_file(record_desc, nucleotide, strand, frame):
-    with open('orfs_'+file, 'a') as f:
+    with open(output_filename, 'a') as f:
         f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(nucleotide)} \n')
         f.write(f"{nucleotide}\n")
 
 parser = argparse.ArgumentParser(description="Finds all possible ORFs in a DNA sequence from a fasta file.")
-parser.add_argument("filename", help="Path to fasta file", metavar="<FASTA file>", type=str)
+parser.add_argument("filename", help="Path to fasta file", metavar="<Input FASTA file>", type=str)
+parser.add_argument("output_filename", nargs='?', help="Path to fasta file output", 
+                    metavar="<Output FASTA file>", type=str, default=None)
 
 args = parser.parse_args()
 file = args.filename
+global output_filename
+if args.output_filename is None:
+    output_filename = f'orfs_{file}'
+    print(f'No output file provided, defaulting to {output_filename}')
+else:
+    output_filename = args.output_filename
 
 if __name__ == '__main__':
     records = read_fasta_file(file)
+    all_orfs = []
     for record in records:
-        record_description = record.description
-        nucleotides, strands, frames = find_orfs(record)
-        for nucleotide, strand, frame in zip(nucleotides, strands, frames):
-            write_to_fasta_file(record_description, nucleotide, strand, frame)
-            #print(f'{pro[:30]} {pro[-3:]} - length {len(pro)}, strand {strand}, frame {frame}')
+        record_orfs = find_orfs(record)
+        all_orfs.append(record_orfs)
+
+    for orf in all_orfs:
+        for record_desc, nucleotide, strand, frame in orf:
+            #print(f'{record_desc} - {nucleotide} - {strand} - {frame} \n')
+            write_to_fasta_file(record_desc, nucleotide, strand, frame)

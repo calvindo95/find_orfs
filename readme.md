@@ -21,9 +21,9 @@ Run the script: (this section does not include the cli yet)
 ```
 ./main.py
 ```
-For some reason the last 2 steps don't work for me, so this is the current work-aorund to run the program:
+For some reason the last 2 steps don't work for me, so this is the current work-around to run the program:
 ```
-python3 main.py
+python3 main.py <FASTA file>
 ```
 ## Author
 * Calvin Do
