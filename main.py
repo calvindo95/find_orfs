@@ -62,10 +62,11 @@ parser = argparse.ArgumentParser(description="Finds all possible ORFs in a DNA s
 parser.add_argument("filename", help="Path to fasta file", metavar="<Input FASTA file>", type=str)
 parser.add_argument("output_filename", nargs='?', help="Path to fasta file output", 
                     metavar="<Output FASTA file>", type=str, default=None)
-
 args = parser.parse_args()
+
 file = args.filename
 global output_filename
+
 if args.output_filename is None:
     output_filename = f'orfs_{file}'
     print(f'No output file provided, defaulting to {output_filename}')
