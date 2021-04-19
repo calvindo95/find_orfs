@@ -1,11 +1,6 @@
 import os
-import itertools
 from Bio import SeqIO
 import argparse
-
-# TODO:
-# make cli interface
-# write orfs to a fasta file -- this is kinda done, it needs more work
 
 '''
     THIS IS DEPRECATED
@@ -58,23 +53,40 @@ def write_to_fasta_file(record_desc, nucleotide, strand, frame):
         f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(nucleotide)} \n')
         f.write(f"{nucleotide}\n")
 
+'''
+    Validates Input and Output file formats
+'''
+def check_args():
+    # validates input file name
+    if args.filename.endswith(".fasta"):
+        input_file = args.filename
+    else:
+        print("Input file is not a FASTA file")
+        quit()
+
+    # validates output name
+    if args.output_filename is None:
+        output_filename = f'orfs_{input_file}'
+        print(f'No output file provided, defaulting to {output_filename}')
+    elif args.output_filename.endswith(".fasta"):
+        output_filename = args.output_filename
+    else:
+        print("Output file is not a FASTA file")
+        quit()
+
 parser = argparse.ArgumentParser(description="Finds all possible ORFs in a DNA sequence from a fasta file.")
 parser.add_argument("filename", help="Path to fasta file", metavar="<Input FASTA file>", type=str)
 parser.add_argument("output_filename", nargs='?', help="Path to fasta file output", 
                     metavar="<Output FASTA file>", type=str, default=None)
 args = parser.parse_args()
 
-file = args.filename
-global output_filename
-
-if args.output_filename is None:
-    output_filename = f'orfs_{file}'
-    print(f'No output file provided, defaulting to {output_filename}')
-else:
-    output_filename = args.output_filename
+input_file = ""
+output_filename = ""
 
 if __name__ == '__main__':
-    records = read_fasta_file(file)
+    check_args()
+
+    records = read_fasta_file(input_file)
     all_orfs = []
     for record in records:
         record_orfs = find_orfs(record)
