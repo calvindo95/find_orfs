@@ -48,7 +48,7 @@ def find_orfs(record):
     Input: record_desc, nucleotide, strand, frame
     Output: None
 '''
-def write_to_fasta_file(record_desc, nucleotide, strand, frame):
+def write_to_fasta_file(output_filename, record_desc, nucleotide, strand, frame):
     with open(output_filename, 'a') as f:
         f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(nucleotide)} \n')
         f.write(f"{nucleotide}\n")
@@ -57,6 +57,9 @@ def write_to_fasta_file(record_desc, nucleotide, strand, frame):
     Validates Input and Output file formats
 '''
 def check_args():
+    input_file = ""
+    output_filename = ""
+
     # validates input file name
     if args.filename.endswith(".fasta"):
         input_file = args.filename
@@ -73,6 +76,7 @@ def check_args():
     else:
         print("Output file is not a FASTA file")
         quit()
+    return input_file, output_filename
 
 parser = argparse.ArgumentParser(description="Finds all possible ORFs in a DNA sequence from a fasta file.")
 parser.add_argument("filename", help="Path to fasta file", metavar="<Input FASTA file>", type=str)
@@ -80,11 +84,10 @@ parser.add_argument("output_filename", nargs='?', help="Path to fasta file outpu
                     metavar="<Output FASTA file>", type=str, default=None)
 args = parser.parse_args()
 
-input_file = ""
-output_filename = ""
+
 
 if __name__ == '__main__':
-    check_args()
+    input_file, output_filename = check_args()
 
     records = read_fasta_file(input_file)
     all_orfs = []
@@ -95,4 +98,4 @@ if __name__ == '__main__':
     for orf in all_orfs:
         for record_desc, nucleotide, strand, frame in orf:
             #print(f'{record_desc} - {nucleotide} - {strand} - {frame} \n')
-            write_to_fasta_file(record_desc, nucleotide, strand, frame)
+            write_to_fasta_file(output_filename, record_desc, nucleotide, strand, frame)
