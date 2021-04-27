@@ -33,12 +33,12 @@ def find_orfs(record):
     all_orfs = []
     for strand, nucleotide in [(+1, record.seq), (-1, record.seq.reverse_complement())]:    # reads in each direction of sequence
         for frame in range(3):  # breaks into 3 frames
-            length = 3 * ((len(record)-frame) // 3 )     # multiples of 3 
-            for nucleotide in nucleotide[frame:frame+length].split('*'): # reads nucleotide sequece in slices according to orf
+            length = 3 * ((len(record)-frame) // 3 )
+            for nucleotide_seq in nucleotide[frame:frame+length].split('*'): # reads nucleotide sequece in slices according to orf
                 local_orfs = []
-                if len(nucleotide) >= min_nucleotide_len:
+                if len(nucleotide_seq) >= min_nucleotide_len:
                     local_orfs.append(record.description) # record description
-                    local_orfs.append(nucleotide)   # appends orf nucleotide sequence
+                    local_orfs.append(nucleotide_seq)   # appends orf nucleotide sequence
                     local_orfs.append(strand)   # appends the strand direction (1 or -1)
                     local_orfs.append(frame)    # appends the frame (0, 1, 2)
                     all_orfs.append(local_orfs) # appends local_orfs of a single record to all_orfs of all records
