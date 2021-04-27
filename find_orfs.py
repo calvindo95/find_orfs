@@ -31,30 +31,32 @@ def read_fasta_file(file):
 def find_orfs(record):
     min_nucleotide_len = 100
     all_orfs = []
-    for strand, nucleotide in [(+1, record.seq), (-1, record.seq.reverse_complement())]:
-        for frame in range(3):
+    for strand, nucleotide in [(+1, record.seq), (-1, record.seq.reverse_complement())]:    # reads in each direction of sequence
+        for frame in range(3):  # breaks into 3 frames
             length = 3 * ((len(record)-frame) // 3 )     # multiples of 3 
-            for nucleotide in nucleotide[frame:frame+length].split('*'):
+            for nucleotide in nucleotide[frame:frame+length].split('*'): # reads nucleotide sequece in slices according to orf
                 local_orfs = []
                 if len(nucleotide) >= min_nucleotide_len:
-                    local_orfs.append(record.description)
-                    local_orfs.append(nucleotide)
-                    local_orfs.append(strand)
-                    local_orfs.append(frame)
-                    all_orfs.append(local_orfs)
+                    local_orfs.append(record.description) # record description
+                    local_orfs.append(nucleotide)   # appends orf nucleotide sequence
+                    local_orfs.append(strand)   # appends the strand direction (1 or -1)
+                    local_orfs.append(frame)    # appends the frame (0, 1, 2)
+                    all_orfs.append(local_orfs) # appends local_orfs of a single record to all_orfs of all records
     return all_orfs
 
 '''
     Input: record_desc, nucleotide, strand, frame
     Output: None
 '''
-def write_to_fasta_file(output_filename, record_desc, nucleotide, strand, frame):
+def write_to_fasta_file(record_desc, nucleotide, strand, frame):
     with open(output_filename, 'a') as f:
         f.write(f'{record_desc} - ORF on strand {strand}, frame {frame} - length {len(nucleotide)} \n')
         f.write(f"{nucleotide}\n")
 
 '''
     Validates Input and Output file formats
+    Input: None
+    Output: input_file_name, output_file_name
 '''
 def check_args():
     input_file = ""
@@ -84,11 +86,9 @@ parser.add_argument("output_filename", nargs='?', help="Path to fasta file outpu
                     metavar="<Output FASTA file>", type=str, default=None)
 args = parser.parse_args()
 
-
+input_file, output_filename = check_args()
 
 if __name__ == '__main__':
-    input_file, output_filename = check_args()
-
     records = read_fasta_file(input_file)
     all_orfs = []
     for record in records:
@@ -98,4 +98,4 @@ if __name__ == '__main__':
     for orf in all_orfs:
         for record_desc, nucleotide, strand, frame in orf:
             #print(f'{record_desc} - {nucleotide} - {strand} - {frame} \n')
-            write_to_fasta_file(output_filename, record_desc, nucleotide, strand, frame)
+            write_to_fasta_file(record_desc, nucleotide, strand, frame)

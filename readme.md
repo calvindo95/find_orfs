@@ -25,7 +25,7 @@ cd find_orfs
 ## Usage
 Run the script with:
 ```
-python3 main.py <FASTA file input> <FASTA file output>
+python3 find_orfs.py <FASTA file input> <FASTA file output>
 ```
 ## Author
 * Calvin Do
